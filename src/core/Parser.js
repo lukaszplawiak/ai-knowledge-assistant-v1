@@ -1,12 +1,4 @@
-// src/core/OCR.js
-const Parser = (() => {
-    const { isValidExtractedText } = TextUtils;
-    const { doOCRPDF, tryParseText } = PdfParser;
-    const { convertDocxToGoogleDocText,tryParseDocx } = DocxParser;
-    const { doOCRImage } = ImageParser;
-    const { parseExcelSafe } = ExcelParser;
-    const { parseGoogleSheet } = GoogleSheetParser;
-  
+
     /**
      * Główna funkcja przetwarzania pliku:
      * - wybiera odpowiedni parser/OCR w zależności od MIME typu
@@ -29,27 +21,22 @@ const Parser = (() => {
         // 🖼️ Obrazy: natychmiast OCR
         if (/image\/(jpeg|jpg|png|tiff)/.test(mimeType)) {
           text = doOCRImage(file);
-        }
-        else if (mimeType === 'application/pdf') {
+        } else if (mimeType === 'application/pdf') {
           text = tryParseText(file);
           if (!isValidExtractedText(text)) {
             Logger.log(`ℹ️ Parsowanie PDF nieudane — fallback do OCR`);
             text = doOCRPDF(file);
-          }
-  
-         // 📃 DOCX: parsowanie → konwersja → OCR
-    else if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-      text = tryParseDocx(file);
-      if (!isValidExtractedText(text)) {
-        Logger.log(`ℹ️ DOCX: Parsowanie zawiodło — próbuję konwersję`);
-        text = convertDocxToGoogleDocText(file);
-        if (!isValidExtractedText(text)) {
-          Logger.log(`ℹ️ DOCX: Konwersja zawiodła — wykonuję OCR`);
-          text = doOCRPDF(file);
-        }
-      }
-    }
-  
+          }// 📃 DOCX: parsowanie → konwersja → OCR   
+        } else if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+          text = parseDocxWithFallback(file);
+          // if (!isValidExtractedText(text)) {
+          //   Logger.log(`ℹ️ DOCX: Parsowanie zawiodło — próbuję konwersję`);
+          //   text = convertDocxToGoogleDocText(file);
+          //   if (!isValidExtractedText(text)) {
+          //     Logger.log(`ℹ️ DOCX: Konwersja zawiodła — wykonuję OCR`);
+          //     text = doOCRPDF(file);
+          //   }
+          // }
         } else if (mimeType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
           text = parseExcelSafe(file);
   
@@ -78,9 +65,6 @@ const Parser = (() => {
         return '';
       }
     }
-  
-    return { performParsingWithFallback };
-  })();
   
 
 

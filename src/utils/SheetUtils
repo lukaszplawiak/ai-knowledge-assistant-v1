@@ -1,5 +1,4 @@
-// src/utils/SheetUtils.js
-const SheetUtils = (() => {
+
   /**
    * Ekstrahuje dane tekstowe ze wszystkich arkuszy.
    * Ignoruje puste wiersze.
@@ -27,8 +26,3 @@ const SheetUtils = (() => {
   }
   
   
-
-  return {
-    extractSheetText
-  };
-})();

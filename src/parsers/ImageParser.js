@@ -1,7 +1,4 @@
-// src/parsers/ImageParser.js
-const ImageParser = (() => {
-    const { getParentFolderSafe, isValidExtractedText } = FileUtils;
-  
+
     /**
      * Wykonuje OCR na obrazie (JPG, PNG, TIFF).
      * - W razie sukcesu zapisuje .txt i usuwa tymczasowy plik.
@@ -47,7 +44,4 @@ const ImageParser = (() => {
         return '';
       }
     }
-  
-    return { doOCRImage };
-  })();
   

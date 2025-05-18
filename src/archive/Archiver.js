@@ -1,5 +1,3 @@
-const Archiver = (() => {
-    const { buildFolderStructure, copyFilesAndCleanup, copyFilesAndCleanupWithPagination } = FileUtils;
   
     function nightlyArchiver() {
       const SOURCE_FOLDER_ID = 'ID_TO_ARCHIVE';
@@ -55,10 +53,3 @@ const Archiver = (() => {
 //   buildFolderStructure(source, dest);
 //   copyFilesAndCleanupWithPagination(source, dest);
 // }
-
-    return {
-      nightlyArchiver,
-      weeklyArchiver
-    };
-  })();
-  

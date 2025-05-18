@@ -1,4 +1,4 @@
-const MetadataUtils = (() => {
+
     /**
      * Wyciąga podstawowe słowa kluczowe z tekstu.
      * W wersji produkcyjnej warto zastosować AI lub NLP.
@@ -56,13 +56,4 @@ const MetadataUtils = (() => {
       const plain = text.replace(/\s+/g, ' ').trim();
       return plain.substring(0, maxLength) + (plain.length > maxLength ? '...' : '');
     }
-  
-    return {
-      extractKeywords,
-      generateSynonyms,
-      inferTitle,
-      extractSections,
-      summarizeText,
-    };
-  })();
   

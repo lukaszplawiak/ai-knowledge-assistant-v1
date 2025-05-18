@@ -1,5 +1,5 @@
 // Language.js – Detekcja języka dokumentu
-const Language = (() => {
+
     /**
      * Detekuje język na podstawie pierwszych 150 znaków.
      * @param {string} text - pełny tekst dokumentu
@@ -19,5 +19,3 @@ const Language = (() => {
       }
     }
   
-    return { detectLanguage };
-  })();

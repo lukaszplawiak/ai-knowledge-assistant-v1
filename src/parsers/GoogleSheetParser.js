@@ -1,6 +1,3 @@
-  // src/parsers/GoogleSheetParser.js
-const GoogleSheetParser = (() => {
-  const { extractSheetText } = SheetUtils;
 
   /**
    * Parsuje plik Google Sheets i wyciąga tekst z wszystkich arkuszy.
@@ -21,11 +18,6 @@ const GoogleSheetParser = (() => {
       return '';
     }
   }
-
-  return {
-    parseGoogleSheetSafe
-  };
-})();
 
   // /**
   //    * Parsowanie pliku Google Sheets

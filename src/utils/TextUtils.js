@@ -1,5 +1,4 @@
-// src/utils/TextUtils.js
-const TextUtils = (() => {
+
   /**
    * Sprawdza jakość wyciągniętego tekstu:
    * - długość
@@ -71,11 +70,3 @@ const TextUtils = (() => {
     const firstLine = text.split("\n")[0];
     return firstLine.length < 100 ? firstLine : "Dokument bez tytułu";
   }
-
-  return {
-    isValidExtractedText,
-    summarizeText,
-    extractSections,
-    inferTitle
-  };
-})();

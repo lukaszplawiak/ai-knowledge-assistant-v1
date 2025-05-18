@@ -1,15 +1,16 @@
-function runBatchOCR() {
-    const { batchOCRProcessor } = Processor;
-    batchOCRProcessor();
+function runBatchTextExtractionProcessor() {
+    batchTextExtractionProcessor();
+  }
+
+  function runBatchMetadataGenerationProcessor() {
+    batchMetadataGenerationProcessor();
   }
   
   function runWeeklyArchive() {
-    const { weeklyArchiver } = Processor;
     weeklyArchiver();
   }
   
   function runNightlyArchive() {
-    const { nightlyArchiver } = Processor;
     nightlyArchiver();
   }
 

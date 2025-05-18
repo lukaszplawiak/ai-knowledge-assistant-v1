@@ -1,7 +1,4 @@
-// src/core/Parsers.js
-const Parsers = (() => {
-    const { waitForDocumentReady, getParentFolderSafe, isValidExtractedText } = FileUtils;
-  
+
     /**
      * Parsowanie pliku PDF do tekstu (bez OCR)
      */
@@ -144,12 +141,4 @@ const Parsers = (() => {
       }
     }
   
-    return {
-      tryParseText,
-      tryParseDocx,
-      parseGoogleSheet,
-      parseExcel,
-      convertDocxToGoogleDocText
-    };
-  })();
-  
+   

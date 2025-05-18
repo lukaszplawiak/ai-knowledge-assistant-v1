@@ -1,4 +1,4 @@
-const TextParser = (() => {
+
     /**
      * Wnioskowanie tytułu na podstawie pierwszej linii.
      * @param {string} text
@@ -17,7 +17,4 @@ const TextParser = (() => {
     function extractSections(text) {
       return text.includes('\n\n') ? text.split(/\n\n+/).slice(0, 5) : [];
     }
-  
-    return { inferTitle, extractSections };
-  })();
   

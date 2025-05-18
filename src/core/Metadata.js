@@ -1,11 +1,5 @@
 // Metadata.js – generowanie struktury metadata.json z pliku tekstowego i źródłowego
-const Metadata = (() => {
-    const { extractKeywords, generateSynonyms, inferTitle, extractSections, summarizeText } = MetadataUtils;
-    const { extractExcelInsights } = ExcelParser;
-    const { detectLanguage } = Language;
-    const { autoTag } = AI;
-    const { getParentFolderSafe } = FileUtils;
-  
+
     /**
    * Generuje metadata.json z tekstu i pliku źródłowego
    * @param {File} file - plik źródłowy
@@ -87,7 +81,5 @@ const Metadata = (() => {
       };
     }
   
-    return { generateMetadata };
-  })();
   
   // dobry?

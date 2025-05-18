@@ -1,8 +1,3 @@
-const Processor = (() => {
-    const { getAllFilesRecursively, markAsProcessedText, saveMetadataFile, saveTextFile } = FileUtils;
-    const { performParsingWithFallback } = Parser;
-    const { generateMetadata } = Metadata;
-  
 
     /**
    * Faza 1: przetwarzanie wsadowe plików źródłowych do plików .txt
@@ -68,16 +63,42 @@ const Processor = (() => {
     for (const txtFile of filesToProcess) {
       if (generatedFiles >= PAGE_SIZE) break;
       try {
-        const parent = FileUtils.getParentFolderSafe(txtFile);
+        const parentFolder = getParentFolderSafe(txtFile);
         const jsonName = txtFile.getName().replace(/\.txt$/, '.json');
-        if (!parent || parent.getFilesByName(jsonName).hasNext()) continue;
+        if (!parentFolder || parentFolder.getFilesByName(jsonName).hasNext()) continue;
 
+        // początek wywołania API :
         Logger.log(`🔵 Generuję metadata dla: ${txtFile.getName()}`);
         const text = txtFile.getBlob().getDataAsString();
-        const metadata = generateMetadataFromText(txtFile, text);
+        const prompt = buildMetadataPrompt(text);
+        const gptResponse = callOpenAIChatGPT(prompt, 2500);
 
-        saveMetadataFile(txtFile, metadata);
+        // const metadata = generateMetadataFromText(txtFile, text);
+
+        // Próbujemy sparsować odpowiedź jako JSON
+    let metadataObj;
+    try {
+      metadataObj = JSON.parse(gptResponse);
+    } catch (e) {
+      Logger.log('❌ Niepoprawny JSON w odpowiedzi AI: ' + e.message);
+      return;
+    }
+
+    // Walidacja struktury
+    if (!validateMetadataJson(metadataObj)) {
+      Logger.log('❌ Błąd walidacji struktury metadata.json.');
+      return;
+    }
+
+        // saveMetadataFile(txtFile, metadata);
+// sprawdzić czy nie mona lepiej produkcyjnie zapisywać pliku ?!
+        const baseName = txtFile.getName().replace(/\.txt$/, '');
+        const jsonFileName = baseName + 'Metadata.json';
+        const jsonBlob = Utilities.newBlob(JSON.stringify(metadataObj, null, 2), 'application/json', jsonFileName);
+        parentFolder.createFile(jsonBlob);
+
         generatedFiles++;
+
         Logger.log(`✅ Utworzono metadata.json dla: ${txtFile.getName()}`);
       } catch (e) {
         Logger.log(`❌ Błąd generowania metadata: ${e.message}\n${e.stack}`);
@@ -86,11 +107,32 @@ const Processor = (() => {
     Logger.log(`🟢 Zakończono generowanie metadata dla ${generatedFiles} plików.`);
   }
     
-  
-    return { 
-      batchTextExtractionProcessor, 
-      batchMetadataGenerationProcessor };
-  })();
+
+ /**
+ * Waliduje, czy przekazany obiekt spełnia wymaganą strukturę metadata.json.
+ * Zwraca true/false i opcjonalnie loguje błędy.
+ * @param {object} json - Sparsowany JSON z odpowiedzi AI.
+ */
+function validateMetadataJson(json) {
+  // Lista wymaganych pól głównych
+  const requiredFields = [
+    "fileName", "fileType", "documentType",
+    "project", "document", "communication",
+    "textData", "excelData", "meta"
+  ];
+  for (let field of requiredFields) {
+    if (!(field in json)) {
+      Logger.log(`❌ Brak pola głównego: ${field}`);
+      return false;
+    }
+  }
+  // Przykład: możesz dodać dodatkowe walidacje (np. typów, podstruktur, wymaganych pól wewnątrz)
+  // Np. czy textData.keywords to array, czy meta.metadataVersion === '1.0', itp.
+  // ...
+  return true;
+}
+
+
 
   // dobry
   

@@ -1,7 +1,4 @@
-const DocxParser = (() => {
-    const { waitForDocumentReady, getParentFolderSafe, isValidExtractedText } = FileUtils;
-    const { doOCRPDF } = OCR; // fallback na OCR (jak dla PDF)
-    
+
     /**
      * Główna funkcja przetwarzania pliku DOCX:
      * - 1. próbuje parsować z blobu
@@ -83,9 +80,4 @@ const DocxParser = (() => {
         return null;
       }
     }
-  
-    return {
-      parseDocxWithFallback
-    };
-  })();
   

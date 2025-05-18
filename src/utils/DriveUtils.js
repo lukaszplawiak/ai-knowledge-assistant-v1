@@ -1,4 +1,4 @@
-const DriveUtils = (() => {
+
 
     function getAllFilesRecursively(folder) {
       let out = [];
@@ -17,8 +17,3 @@ const DriveUtils = (() => {
       // ... save logic ...
     }
   
-    return { 
-      getAllFilesRecursively, 
-      saveTextFile, 
-      saveMetadataFile };
-  })();

@@ -1,4 +1,4 @@
-const FileUtils = (() => {
+
     /**
      * Zwraca folder nadrzędny pliku lub null jeśli brak.
      * @param {GoogleAppsScript.Drive.File} file
@@ -7,17 +7,15 @@ const FileUtils = (() => {
     function getParentFolderSafe(file) {
       try {
         const parents = file.getParents();
-        if (parents.hasNext()) {
-          return { success: true, folder: parents.next() };
-        } else {
-          Logger.log(`⚠️ Plik ${file.getName()} nie ma folderu nadrzędnego`);
-          return { success: false, folder: null };
-        }
+        if (parents.hasNext()) return parents.next();
+        Logger.log(`⚠️ Plik ${file.getName()} nie ma folderu nadrzędnego`);
+        return null;
       } catch (e) {
         Logger.log(`❌ Błąd przy pobieraniu folderu nadrzędnego dla ${file.getName()}: ${e.message}`);
-        return { success: false, folder: null };
+        return null;
       }
     }
+    
     
   
     /**
@@ -28,7 +26,7 @@ const FileUtils = (() => {
     function checkIfProcessed(file) {
       try {
         const parentFolder = getParentFolderSafe(file);
-        if (!parentFolder) return false;
+        if (!parentFolder) return;
   
         const baseName = file.getName().replace(/\.[^\.]+$/, '');
         const txtExists = parentFolder.getFilesByName(baseName + '.txt').hasNext();
@@ -357,19 +355,3 @@ function isValidExtractedText(text) {
     return true;
   }
     
-      return {
-        getParentFolderSafe,
-        checkIfProcessed,
-        saveTextFile,
-        saveMetadataFile,
-        markAsProcessedText,
-        getAllFilesRecursively,
-        buildFolderStructure,
-        copyFilesAndCleanup,
-        copyFilesAndCleanupWithPagination,
-        waitForDocumentReady,
-        isValidExtractedText
-      };
-    })();
-    
-  

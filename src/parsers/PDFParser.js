@@ -1,8 +1,4 @@
-// src/parsers/PdfParser.js
-const PdfParser = (() => {
-    const { isValidExtractedText } = FileUtils;
-    const { doOCRPDF } = OCR;
-  
+
     /**
      * Główna funkcja przetwarzania PDF:
      * - 1. próba parsowania z blobu (szybka)
@@ -42,9 +38,4 @@ const PdfParser = (() => {
         return '';
       }
     }
-  
-    return {
-      parsePdfWithFallback
-    };
-  })();
   

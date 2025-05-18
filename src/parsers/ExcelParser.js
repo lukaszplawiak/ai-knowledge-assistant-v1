@@ -1,4 +1,4 @@
-const ExcelParser = (() => {
+
     /**
      * Analizuje plik Excel i zwraca podstawowe informacje o jego zawartości.
      * 
@@ -60,9 +60,5 @@ const ExcelParser = (() => {
       }
     }
     
-  
-    return { parseExcelSafe };
-  })();
-  
   // Gdzie i kiedy używać?
   // W Metadata.js, do uzupełnienia pola document.sections gdy plik jest typu excel.
