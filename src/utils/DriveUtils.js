@@ -9,11 +9,4 @@
       return out;
     }
   
-    function saveTextFile(file, text) {
-      // ... save logic ...
-    }
-  
-    function saveMetadataFile(file, metadata) {
-      // ... save logic ...
-    }
-  
+    

@@ -8,7 +8,8 @@
       let generatedFiles = 0;
   
       const rootFolder = DriveApp.getFolderById(ARCHIVE_FOLDER_ID);
-      const filesToProcess = getAllFilesRecursively(rootFolder, 'txt');
+      // const filesToProcess = getAllFilesRecursively(rootFolder, 'txt');
+      const filesToProcess = getNonTxtFilesWithoutTxt(rootFolder);
   
       Logger.log(`📦 Znaleziono ${filesToProcess.length} kandydatów do przetworzenia.`);
   
@@ -45,94 +46,140 @@
   
       Logger.log(`🟢 Przetworzono ${generatedFiles} plików z ${PAGE_SIZE} możliwych.`);
     }
-  
-    /**
-   * Faza 2: generowanie metadanych JSON z plików .txt
-   */
-  function batchMetadataGenerationProcessor() {
-    const ARCHIVE_FOLDER_ID = '19WgNzF9RPZY_clB5mzZpVbzp61KfbVOt';
-    const PAGE_SIZE = 10;
-    let generatedFiles = 0;
 
-    const rootFolder = DriveApp.getFolderById(ARCHIVE_FOLDER_ID);
-    const filesToProcess = getAllFilesRecursively(rootFolder)
-      .filter(file => file.getName().endsWith('.txt'));
 
-    Logger.log(`📄 Znaleziono ${filesToProcess.length} plików .txt bez metadata.json.`);
+function batchMetadataGenerationProcessor() {
+  const ARCHIVE_FOLDER_ID = '19WgNzF9RPZY_clB5mzZpVbzp61KfbVOt';
+  const PAGE_SIZE = 10;
+  let generatedFiles = 0;
 
-    for (const txtFile of filesToProcess) {
-      if (generatedFiles >= PAGE_SIZE) break;
-      try {
-        const parentFolder = getParentFolderSafe(txtFile);
-        const jsonName = txtFile.getName().replace(/\.txt$/, '.json');
-        if (!parentFolder || parentFolder.getFilesByName(jsonName).hasNext()) continue;
+  const rootFolder = DriveApp.getFolderById(ARCHIVE_FOLDER_ID);
+  // Pobieramy tylko pliki .txt które nie mają odpowiadającego metadata.json
+  // const filesToProcess = getAllFilesRecursively(rootFolder)
+  //   .filter(function(file) {
+  //     if (!file.getName().endsWith('.txt')) return false;
+  //     var parent = getParentFolderSafe(file);
+  //     var jsonName = file.getName().replace(/\.txt$/, '.json');
+  //     return parent && !parent.getFilesByName(jsonName).hasNext();
+  //   });
+  var filesToProcess = getTxtFilesWithoutJson(rootFolder);
 
-        // początek wywołania API :
-        Logger.log(`🔵 Generuję metadata dla: ${txtFile.getName()}`);
-        const text = txtFile.getBlob().getDataAsString();
-        const prompt = buildMetadataPrompt(text);
-        const gptResponse = callOpenAIChatGPT(prompt, 2500);
+  Logger.log('📄 Znaleziono %d plików .txt do przetworzenia.', filesToProcess.length);
 
-        // const metadata = generateMetadataFromText(txtFile, text);
-
-        // Próbujemy sparsować odpowiedź jako JSON
-    let metadataObj;
+  for (var i = 0; i < filesToProcess.length; i++) {
+    if (generatedFiles >= PAGE_SIZE) break;
+    var txtFile = filesToProcess[i];
     try {
-      metadataObj = JSON.parse(gptResponse);
-    } catch (e) {
-      Logger.log('❌ Niepoprawny JSON w odpowiedzi AI: ' + e.message);
-      return;
-    }
+      var parentFolder = getParentFolderSafe(txtFile);
+      var baseName = txtFile.getName().replace(/\.txt$/, '');
+      var jsonFileName = baseName + 'Metadata.json';
 
-    // Walidacja struktury
-    if (!validateMetadataJson(metadataObj)) {
-      Logger.log('❌ Błąd walidacji struktury metadata.json.');
-      return;
-    }
+      Logger.log('🔵 Generuję metadata dla: %s', txtFile.getName());
+      var text = txtFile.getBlob().getDataAsString();
 
-        // saveMetadataFile(txtFile, metadata);
-// sprawdzić czy nie mona lepiej produkcyjnie zapisywać pliku ?!
-        const baseName = txtFile.getName().replace(/\.txt$/, '');
-        const jsonFileName = baseName + 'Metadata.json';
-        const jsonBlob = Utilities.newBlob(JSON.stringify(metadataObj, null, 2), 'application/json', jsonFileName);
-        parentFolder.createFile(jsonBlob);
+      // 1. Wypełniamy szablon danymi systemowymi
+      var localMetadata = Metadata.createMetadataJson(txtFile, text);
 
-        generatedFiles++;
+      // 2. Tworzymy prompt dla AI (przekazujemy już częściowo uzupełniony szablon!)
+      var prompt = buildMetadataPrompt(localMetadata, text);
 
-        Logger.log(`✅ Utworzono metadata.json dla: ${txtFile.getName()}`);
+      // 3. Odpytanie API OpenAI
+      var gptResponse = callOpenAIChatGPT(prompt, 2500);
+      gptResponse = cleanJsonFromAI(gptResponse);
+
+      // 4. Parsowanie odpowiedzi i walidacja
+      var metadataObj;
+      try {
+        metadataObj = JSON.parse(gptResponse);
       } catch (e) {
-        Logger.log(`❌ Błąd generowania metadata: ${e.message}\n${e.stack}`);
+        Logger.log('❌ Niepoprawny JSON od AI: ' + e.message);
+        continue;
       }
-    }
-    Logger.log(`🟢 Zakończono generowanie metadata dla ${generatedFiles} plików.`);
-  }
-    
 
- /**
- * Waliduje, czy przekazany obiekt spełnia wymaganą strukturę metadata.json.
- * Zwraca true/false i opcjonalnie loguje błędy.
- * @param {object} json - Sparsowany JSON z odpowiedzi AI.
- */
-function validateMetadataJson(json) {
-  // Lista wymaganych pól głównych
-  const requiredFields = [
-    "fileName", "fileType", "documentType",
-    "project", "document", "communication",
-    "textData", "excelData", "meta"
-  ];
-  for (let field of requiredFields) {
-    if (!(field in json)) {
-      Logger.log(`❌ Brak pola głównego: ${field}`);
-      return false;
+      if (!validateMetadataJson(metadataObj)) {
+        Logger.log('❌ Walidacja metadata.json nieudana!');
+        continue;
+      }
+
+      // 5. Zapisujemy plik metadata.json
+      var jsonBlob = Utilities.newBlob(JSON.stringify(metadataObj, null, 2), 'application/json', jsonFileName);
+      parentFolder.createFile(jsonBlob);
+
+      generatedFiles++;
+      Logger.log('✅ Utworzono metadata.json dla: %s', txtFile.getName());
+    } catch (e) {
+      Logger.log('❌ Błąd generowania metadata: ' + e.message + '\n' + e.stack);
     }
   }
-  // Przykład: możesz dodać dodatkowe walidacje (np. typów, podstruktur, wymaganych pól wewnątrz)
-  // Np. czy textData.keywords to array, czy meta.metadataVersion === '1.0', itp.
-  // ...
-  return true;
+  Logger.log('🟢 Zakończono generowanie metadata dla %d plików.', generatedFiles);
 }
 
 
 
-  // dobry
-  
+
+
+
+  // STARE :
+    /**
+   * Faza 2: generowanie metadanych JSON z plików .txt
+   */
+//   function batchMetadataGenerationProcessor() {
+//     const ARCHIVE_FOLDER_ID = '19WgNzF9RPZY_clB5mzZpVbzp61KfbVOt';
+//     const PAGE_SIZE = 10;
+//     let generatedFiles = 0;
+
+//     const rootFolder = DriveApp.getFolderById(ARCHIVE_FOLDER_ID);
+//     const filesToProcess = getAllFilesRecursively(rootFolder)
+//       .filter(file => file.getName().endsWith('.txt'));
+
+//     Logger.log(`📄 Znaleziono ${filesToProcess.length} plików .txt bez metadata.json.`);
+
+//     for (const txtFile of filesToProcess) {
+//       if (generatedFiles >= PAGE_SIZE) break;
+//       try {
+//         const parentFolder = getParentFolderSafe(txtFile);
+//         const jsonName = txtFile.getName().replace(/\.txt$/, '.json');
+//         if (!parentFolder || parentFolder.getFilesByName(jsonName).hasNext()) continue;
+
+//         // początek wywołania API :
+//         Logger.log(`🔵 Generuję metadata dla: ${txtFile.getName()}`);
+//         const text = txtFile.getBlob().getDataAsString();
+//         const prompt = buildMetadataPrompt(text);
+//         const gptResponse = callOpenAIChatGPT(prompt, 2500);
+
+//         // const metadata = generateMetadataFromText(txtFile, text);
+
+//         // Próbujemy sparsować odpowiedź jako JSON
+//     let metadataObj;
+//     try {
+//       metadataObj = JSON.parse(gptResponse);
+//     } catch (e) {
+//       Logger.log('❌ Niepoprawny JSON w odpowiedzi AI: ' + e.message);
+//       return;
+//     }
+
+//     // Walidacja struktury
+//     if (!validateMetadataJson(metadataObj)) {
+//       Logger.log('❌ Błąd walidacji struktury metadata.json.');
+//       return;
+//     }
+
+//         // saveMetadataFile(txtFile, metadata);
+// // sprawdzić czy nie mona lepiej produkcyjnie zapisywać pliku ?!
+//         const baseName = txtFile.getName().replace(/\.txt$/, '');
+//         const jsonFileName = baseName + 'Metadata.json';
+//         const jsonBlob = Utilities.newBlob(JSON.stringify(metadataObj, null, 2), 'application/json', jsonFileName);
+//         parentFolder.createFile(jsonBlob);
+
+//         generatedFiles++;
+
+//         Logger.log(`✅ Utworzono metadata.json dla: ${txtFile.getName()}`);
+//       } catch (e) {
+//         Logger.log(`❌ Błąd generowania metadata: ${e.message}\n${e.stack}`);
+//       }
+//     }
+//     Logger.log(`🟢 Zakończono generowanie metadata dla ${generatedFiles} plików.`);
+//   }
+    // DO TU STARE !
+
+ 

@@ -18,7 +18,7 @@
       }
   
       Logger.log(`🔁 Parsowanie PDF zawiodło — fallback do OCR`);
-      return doOCRPDF(file);
+      return doOCRImage(file);
     }
   
     /**

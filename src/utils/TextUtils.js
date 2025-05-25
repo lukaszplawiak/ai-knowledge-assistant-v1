@@ -1,4 +1,3 @@
-
   /**
    * Sprawdza jakość wyciągniętego tekstu:
    * - długość
@@ -8,7 +7,7 @@
    * @param {string} text
    * @returns {boolean}
    */
-  function isValidExtractedText(text, { minLength = 30, allowNumericTables = true } = {}) {
+  function isValidExtractedText(text, { minLength = 30, allowNumericTables = true } = {}) {  // OK
     if (!text || typeof text !== 'string') {
       Logger.log(`❌ Walidacja tekstu nieudana: brak lub nie tekst`);
       return false;
@@ -42,31 +41,10 @@
     return true;
   }
   
-
-  /**
-   * Tworzy streszczenie z początku tekstu (max 500 znaków)
-   * @param {string} text
-   * @returns {string}
-   */
-  function summarizeText(text) {
-    return text.substring(0, 500) + '...';
-  }
-
-  /**
-   * Wyciąga nagłówki-sekcje z tekstu (heurystyka)
-   * @param {string} text
-   * @returns {string[]}
-   */
-  function extractSections(text) {
-    return text.includes("\n\n") ? text.split(/\n\n+/).slice(0, 5) : [];
-  }
-
-  /**
-   * Szacuje tytuł dokumentu na podstawie pierwszej linii
-   * @param {string} text
-   * @returns {string}
-   */
-  function inferTitle(text) {
-    const firstLine = text.split("\n")[0];
-    return firstLine.length < 100 ? firstLine : "Dokument bez tytułu";
-  }
+  function extractSheetText(sheet) {
+      const sheets = sheet.getSheets();
+      return sheets.map(s => {
+        const data = s.getDataRange().getValues();
+        return data.map(row => row.join(' ')).join('\n');
+      }).join('\n');
+    }

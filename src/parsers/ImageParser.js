@@ -7,7 +7,7 @@
      * @param {File} file - obraz do przetworzenia
      * @returns {string} - rozpoznany tekst lub pusty string
      */
-    function doOCRImage(file) {
+    function doOCRImage(file) {  // OK
       const baseName = file.getName().replace(/\.[^\.]+$/, '');
       const resource = {
         title: baseName,

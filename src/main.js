@@ -5,6 +5,10 @@ function runBatchTextExtractionProcessor() {
   function runBatchMetadataGenerationProcessor() {
     batchMetadataGenerationProcessor();
   }
+
+  function runGenerateAndSaveMetadata() {
+    generateAndSaveMetadata();
+  }
   
   function runWeeklyArchive() {
     weeklyArchiver();
@@ -13,6 +17,4 @@ function runBatchTextExtractionProcessor() {
   function runNightlyArchive() {
     nightlyArchiver();
   }
-
-  // dobry
   

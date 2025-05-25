@@ -1,20 +1,13 @@
 
     /**
-     * Wnioskowanie tytułu na podstawie pierwszej linii.
-     * @param {string} text
-     * @returns {string}
+     * Parsowanie pliku PDF do tekstu (bez OCR)
      */
-    function inferTitle(text) {
-      const firstLine = text.split('\n')[0];
-      return firstLine.length < 100 ? firstLine : 'Dokument bez tytułu';
-    }
-  
-    /**
-     * Wyodrębnianie sekcji z tekstu na podstawie pustych linii.
-     * @param {string} text
-     * @returns {string[]}
-     */
-    function extractSections(text) {
-      return text.includes('\n\n') ? text.split(/\n\n+/).slice(0, 5) : [];
+    function tryParseText(file) {  // OK
+      try {
+        return file.getBlob().getDataAsString();
+      } catch (e) {
+        Logger.log(`❌ Błąd parsowania PDF: ${e.message}`);
+        return '';
+      }
     }
   
