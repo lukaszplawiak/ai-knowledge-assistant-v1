@@ -39,7 +39,7 @@ WAŻNE:
 - Jeśli nie możesz znaleźć danej informacji, pozostaw pole puste lub jako brak (zgodnie z szablonem poniżej).
 - Nie zmieniaj struktury kluczy i kolejności pól.
 
-I NAJWAŻNIEJSZE ! : NIE używaj bloków \`\`\`json ani żadnych bloków markdown. NIE otaczaj odpowiedzi blokiem markdown, NIE dodawaj żadnych znaków przed i po JSON. Twoja odpowiedź ma być TYLKO czystym JSON-em.
+I NAJWAŻNIEJSZE ! : NIE używaj bloków \`\`\`json ani żadnych bloków markdown. NIE otaczaj odpowiedzi blokiem markdown, NIE dodawaj żadnych znaków przed i po JSON. Twoja odpowiedź ma być TYLKO czystym I POPRAWNYM JSON-em.
 
 Oto szablon metadata.json do uzupełnienia:
 ---
@@ -53,80 +53,3 @@ ${text}
 `;
   return prompt;
 }
-
-
-
-// STARE :
-
-// /**
-//  * Buduje prompt do ChatGPT na podstawie tekstu i szablonu metadata.json.
-//  * @param {string} text - Treść pliku .txt do analizy.
-//  * @returns {string} - Gotowy prompt do wysłania do API.
-//  */
-// function buildMetadataPrompt(text) {
-//     return `
-//   Wygeneruj poniższy plik metadata.json na podstawie przekazanego tekstu.
-//   Uzupełnij każde pole najlepiej jak potrafisz, zgodnie ze strukturą - jeśli nie znajdziesz danych, zostaw puste pole.
-  
-//   Oto szablon JSON (nie zmieniaj struktury!):
-  
-//   {
-//     "fileName": "",
-//     "fileType": "",
-//     "documentType": "",
-//     "project": {
-//       "projectName": "",
-//       "location": "",
-//       "date": "",
-//       "stage": ""
-//     },
-//     "document": {
-//       "title": "",
-//       "sections": [],
-//       "authors": [],
-//       "createdDate": "",
-//       "modifiedDate": ""
-//     },
-//     "communication": {
-//       "participants": [],
-//       "conversationStartDate": "",
-//       "topic": "",
-//       "conclusions": ""
-//     },
-//     "textData": {
-//       "rawText": "",
-//       "summary": "",
-//       "keywords": [],
-//       "keywordSynonyms": {},
-//       "language": ""
-//     },
-//     "excelData": {
-//       "numberOfSheets": 0,
-//       "sheetNames": [],
-//       "approximateRows": 0,
-//       "importantFields": [],
-//       "sampleRows": [],
-//       "textualSheets": []
-//     },
-//     "meta": {
-//       "source": "",
-//       "ocrConfidence": 0.0,
-//       "textLength": 0,
-//       "generatedAt": "",
-//       "documentHash": "",
-//       "metadataVersion": "1.0",
-//       "tags": []
-//     }
-//   }
-  
-//   Oto tekst do analizy:
-//   ---
-//   ${text}
-//   ---
-//   Zasady:
-//   - Znajdź 5 słów kluczowych ("keywords") oraz 3 synonimy odpowiadajęce kontekstowo (tematycznie) każdemu z nich - jeśli synonimy słowa nie pasują do kontekstu całego tekstu to mozesz podać najpopularniejszą odmiane danego słowa kluczowego.
-//   - Jeśli nie możesz znaleźć jakiejś informacji, wpisz pusty string/array (ale nie zmieniaj nazwy pola!).
-//   - Odpowiedz **tylko** poprawnym, parsowalnym JSON-em.
-//     `;
-//   }
-  

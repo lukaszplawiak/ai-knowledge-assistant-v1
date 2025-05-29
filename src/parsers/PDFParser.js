@@ -7,7 +7,7 @@
      * @param {File} file - plik PDF
      * @returns {string} - tekst z dokumentu
      */
-    function parsePdfWithFallback(file) {
+    function parsePdfWithFallback(file) {  // OK
       Logger.log(`📄 Start przetwarzania PDF: ${file.getName()}`);
   
       const parsedText = tryParsePdf(file);

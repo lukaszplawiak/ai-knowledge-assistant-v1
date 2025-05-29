@@ -14,13 +14,13 @@ function callOpenAIChatGPT(prompt, maxTokens) {
   // 2. Składamy zapytanie POST zgodne z API OpenAI
   const url = 'https://api.openai.com/v1/chat/completions';
   const payload = {
-    model: 'gpt-4-1106-nano', // lub inny model, np. 'gpt-3.5-turbo' gpt-4-turbo gpt-4-1106-nano
+    model: 'gpt-4.1-nano-2025-04-14', // lub inny model, np. 'gpt-3.5-turbo' gpt-4-turbo gpt-4-1106-nano
     messages: [
       { role: 'system', content: 'Jesteś ekspertem od metadanych dokumentów, Twoim zadaniem jest generowanie metadanych na podstawie tekstów.' },
       { role: 'user', content: prompt }
     ],
     temperature: 0.1,
-    max_tokens: maxTokens || 3000
+    max_tokens: maxTokens || 3500
   };
 
   const options = {

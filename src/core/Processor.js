@@ -5,10 +5,9 @@
     function batchTextExtractionProcessor() {
       const ARCHIVE_FOLDER_ID = '19WgNzF9RPZY_clB5mzZpVbzp61KfbVOt';
       const PAGE_SIZE = 10;
-      let generatedFiles = 0;
+      var generatedFiles = 0;
   
       const rootFolder = DriveApp.getFolderById(ARCHIVE_FOLDER_ID);
-      // const filesToProcess = getAllFilesRecursively(rootFolder, 'txt');
       const filesToProcess = getNonTxtFilesWithoutTxt(rootFolder);
   
       Logger.log(`📦 Znaleziono ${filesToProcess.length} kandydatów do przetworzenia.`);
@@ -31,9 +30,6 @@
   
           saveTextFile(file, text);
   
-          // const metadata = generateMetadata(file, text);
-          // saveMetadataFile(file, metadata);            stare podejście
-  
           markAsProcessedText(file);
           generatedFiles++;
   
@@ -54,15 +50,8 @@ function batchMetadataGenerationProcessor() {
   let generatedFiles = 0;
 
   const rootFolder = DriveApp.getFolderById(ARCHIVE_FOLDER_ID);
-  // Pobieramy tylko pliki .txt które nie mają odpowiadającego metadata.json
-  // const filesToProcess = getAllFilesRecursively(rootFolder)
-  //   .filter(function(file) {
-  //     if (!file.getName().endsWith('.txt')) return false;
-  //     var parent = getParentFolderSafe(file);
-  //     var jsonName = file.getName().replace(/\.txt$/, '.json');
-  //     return parent && !parent.getFilesByName(jsonName).hasNext();
-  //   });
-  var filesToProcess = getTxtFilesWithoutJson(rootFolder);
+
+  var filesToProcess = getTxtFilesWithoutMetadataJson(rootFolder);
 
   Logger.log('📄 Znaleziono %d plików .txt do przetworzenia.', filesToProcess.length);
 
@@ -113,73 +102,3 @@ function batchMetadataGenerationProcessor() {
   }
   Logger.log('🟢 Zakończono generowanie metadata dla %d plików.', generatedFiles);
 }
-
-
-
-
-
-
-  // STARE :
-    /**
-   * Faza 2: generowanie metadanych JSON z plików .txt
-   */
-//   function batchMetadataGenerationProcessor() {
-//     const ARCHIVE_FOLDER_ID = '19WgNzF9RPZY_clB5mzZpVbzp61KfbVOt';
-//     const PAGE_SIZE = 10;
-//     let generatedFiles = 0;
-
-//     const rootFolder = DriveApp.getFolderById(ARCHIVE_FOLDER_ID);
-//     const filesToProcess = getAllFilesRecursively(rootFolder)
-//       .filter(file => file.getName().endsWith('.txt'));
-
-//     Logger.log(`📄 Znaleziono ${filesToProcess.length} plików .txt bez metadata.json.`);
-
-//     for (const txtFile of filesToProcess) {
-//       if (generatedFiles >= PAGE_SIZE) break;
-//       try {
-//         const parentFolder = getParentFolderSafe(txtFile);
-//         const jsonName = txtFile.getName().replace(/\.txt$/, '.json');
-//         if (!parentFolder || parentFolder.getFilesByName(jsonName).hasNext()) continue;
-
-//         // początek wywołania API :
-//         Logger.log(`🔵 Generuję metadata dla: ${txtFile.getName()}`);
-//         const text = txtFile.getBlob().getDataAsString();
-//         const prompt = buildMetadataPrompt(text);
-//         const gptResponse = callOpenAIChatGPT(prompt, 2500);
-
-//         // const metadata = generateMetadataFromText(txtFile, text);
-
-//         // Próbujemy sparsować odpowiedź jako JSON
-//     let metadataObj;
-//     try {
-//       metadataObj = JSON.parse(gptResponse);
-//     } catch (e) {
-//       Logger.log('❌ Niepoprawny JSON w odpowiedzi AI: ' + e.message);
-//       return;
-//     }
-
-//     // Walidacja struktury
-//     if (!validateMetadataJson(metadataObj)) {
-//       Logger.log('❌ Błąd walidacji struktury metadata.json.');
-//       return;
-//     }
-
-//         // saveMetadataFile(txtFile, metadata);
-// // sprawdzić czy nie mona lepiej produkcyjnie zapisywać pliku ?!
-//         const baseName = txtFile.getName().replace(/\.txt$/, '');
-//         const jsonFileName = baseName + 'Metadata.json';
-//         const jsonBlob = Utilities.newBlob(JSON.stringify(metadataObj, null, 2), 'application/json', jsonFileName);
-//         parentFolder.createFile(jsonBlob);
-
-//         generatedFiles++;
-
-//         Logger.log(`✅ Utworzono metadata.json dla: ${txtFile.getName()}`);
-//       } catch (e) {
-//         Logger.log(`❌ Błąd generowania metadata: ${e.message}\n${e.stack}`);
-//       }
-//     }
-//     Logger.log(`🟢 Zakończono generowanie metadata dla ${generatedFiles} plików.`);
-//   }
-    // DO TU STARE !
-
- 
