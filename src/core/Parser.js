@@ -17,17 +17,12 @@
       }
   
       try {
-        // 🖼️ Obrazy: natychmiast OCR
+      
         if (/image\/(jpeg|jpg|png|tiff)/.test(mimeType)) {
           text = doOCRImage(file);
         } else if (mimeType === 'application/pdf') {
           text = parsePdfWithFallback(file);
-          // text = tryParseText(file);
-          // if (!isValidExtractedText(text)) {
-          //   Logger.log(`ℹ️ Parsowanie PDF nieudane — fallback do OCR`);
-          //   text = doOCRImage(file);
-          // }
-          // 📃 DOCX: parsowanie → konwersja → OCR   
+  
         } else if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
           mimeType === 'application/msword' 
         ) {

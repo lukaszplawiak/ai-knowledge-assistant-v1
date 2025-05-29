@@ -1,0 +1,7 @@
+  function extractSheetText(sheet) {
+      const sheets = sheet.getSheets();
+      return sheets.map(s => {
+        const data = s.getDataRange().getValues();
+        return data.map(row => row.join(' ')).join('\n');
+      }).join('\n');
+    }

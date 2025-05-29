@@ -36,20 +36,3 @@
       Logger.log('🔚 KONIEC: Synchronizacja tygodniowa');
     }
   
-// function nightlyArchiver() {
-//   const SRC = 'ID_TO_ARCHIVE';
-//   const DST = 'ID_ARCHIVED';
-//   const source = DriveApp.getFolderById(SRC);
-//   const dest = DriveApp.getFolderById(DST);
-//   buildFolderStructure(source, dest);
-//   copyFilesAndCleanup(source, dest);
-// }
-
-// function weeklyArchiver() {
-//   const SRC = 'ID_TO_ARCHIVE';
-//   const DST = 'ID_ARCHIVED';
-//   const source = DriveApp.getFolderById(SRC);
-//   const dest = DriveApp.getFolderById(DST);
-//   buildFolderStructure(source, dest);
-//   copyFilesAndCleanupWithPagination(source, dest);
-// }

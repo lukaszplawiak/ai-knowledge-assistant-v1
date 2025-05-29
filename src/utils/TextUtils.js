@@ -48,3 +48,29 @@
         return data.map(row => row.join(' ')).join('\n');
       }).join('\n');
     }
+
+       /**
+     * Tworzy plik .txt w folderze pliku źródłowego, jeśli jeszcze nie istnieje.
+     * @param {GoogleAppsScript.Drive.File} file
+     * @param {string} text
+     */
+    function saveTextFile(file, text) {  // OK
+      try {
+        if (!text.trim()) return;
+  
+        const parentFolder = getParentFolderSafe(file);
+        if (!parentFolder) return;
+  
+        const baseName = file.getName().replace(/\.[^\.]+$/, '');
+        const txtFileName = baseName + '.txt';
+  
+        if (parentFolder.getFilesByName(txtFileName).hasNext()) return;
+  
+        const txtBlob = Utilities.newBlob(text, 'text/plain', txtFileName);
+        parentFolder.createFile(txtBlob);
+  
+        Logger.log(`✅ Zapisano plik .txt: ${txtFileName}`);
+      } catch (e) {
+        Logger.log(`❌ Błąd zapisu .txt: ${e.message}`);
+      }
+    }
